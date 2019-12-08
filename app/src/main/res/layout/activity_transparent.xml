@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="#8C000000"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<TextView
+    android:text="MADE BY EMON"
+    android:textSize="40sp"
+    android:gravity="center"
+    android:textStyle="bold"
+    android:textColor="@android:color/white"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+</TextView>
+</LinearLayout>

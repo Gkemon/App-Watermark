@@ -1,4 +1,4 @@
-package com.emon.appwatermark;
+package com.gk.emon.app.watermark;
 
 import android.app.Activity;
 import android.app.Application;
@@ -56,8 +56,7 @@ public class ApplicationEventTracker implements Application.ActivityLifecycleCal
         void onApplicationStop() {}
         void onApplicationStar() {}
         void onApplicationForeground() {}
-        void onApplicationBackground() {
-        }
+        void onApplicationBackground() {}
 
     }
 }

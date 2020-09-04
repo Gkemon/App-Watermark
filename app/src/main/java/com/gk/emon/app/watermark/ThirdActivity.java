@@ -1,8 +1,8 @@
-package com.emon.appwatermark;
-
-import androidx.appcompat.app.AppCompatActivity;
+package com.gk.emon.app.watermark;
 
 import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class ThirdActivity extends AppCompatActivity {
 

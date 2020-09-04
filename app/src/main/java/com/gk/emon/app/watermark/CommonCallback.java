@@ -1,4 +1,4 @@
-package com.emon.appwatermark;
+package com.gk.emon.app.watermark;
 
 public abstract class CommonCallback <T> implements CallBackContract<T> {
     @Override

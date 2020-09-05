@@ -8,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.Settings;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -18,6 +19,8 @@ import androidx.annotation.LayoutRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.github.florent37.inlineactivityresult.InlineActivityResult;
+
 import static android.content.Context.LAYOUT_INFLATER_SERVICE;
 import static android.content.Context.WINDOW_SERVICE;
 
@@ -25,102 +28,195 @@ import static android.content.Context.WINDOW_SERVICE;
  * Created by Gk Emon on 12/3/2019.
  */
 public class AppWaterMarkBuilder {
-    AppCompatActivity activity;
-    int watermarkResourceID;
-    int opacity;
-    @ColorInt
-    int defaultBackgroundColor=0x500000;
-    //This is the main view resource id which we want to show as a watermark
 
-    public static AppWaterMarkBuilder getInstance() {
-        return new AppWaterMarkBuilder();
+    private static Builders appWaterMarkBuilder;
+
+    public synchronized static ActivityStep getInstance() {
+        if (appWaterMarkBuilder != null) return appWaterMarkBuilder;
+        else return appWaterMarkBuilder = new Builders();
     }
 
-    public AppWaterMarkBuilder setAppCompatActivity(@NonNull AppCompatActivity activity) {
-        this.activity = activity;
-        return this;
+
+    public interface ActivityStep {
+        FinalStep setAppCompatActivity(@NonNull AppCompatActivity activity);
     }
 
-    public AppWaterMarkBuilder setWatermarkResourceID(@LayoutRes int resID, int opacity,
-                                                      @ColorRes int defaultBackgroundColor) {
-        this.watermarkResourceID = resID;
-        this.opacity = opacity;
-        try {
-            this.defaultBackgroundColor = activity.getResources().getColor(defaultBackgroundColor);
-        }catch (Exception ignored){}
+    public interface FinalStep {
+        AppWaterMarkBuilderStep setWatermarkProperty(@LayoutRes int resID, int opacity,
+                                                     @ColorRes int defaultBackgroundColor);
 
-        return this;
+        AppWaterMarkBuilderStep setWatermarkProperty(@LayoutRes int resID, int opacity);
+
+        AppWaterMarkBuilderStep setWatermarkProperty(@LayoutRes int resID);
     }
 
-    public AppWaterMarkBuilder setWatermarkResourceID(@LayoutRes int resID, int opacity) {
-        this.watermarkResourceID = resID;
-        this.opacity = opacity;
-        return this;
+    public interface AppWaterMarkBuilderStep {
+        void showWatermark();
+
+        void showWatermark(WatermarkListener watermarkListener);
     }
 
-    public AppWaterMarkBuilder setWatermarkResourceID(@LayoutRes int resID) {
-        this.watermarkResourceID = resID;
-        return this;
-    }
 
-    public void build() {
+    public static class Builders implements FinalStep, ActivityStep, AppWaterMarkBuilderStep {
+        //This is the main view resource id which we want to show as a watermark
+        @LayoutRes
+        int overlayLayoutID;
+        int opacity=50;
+        @ColorInt
+        int defaultBackgroundColor = Color.BLACK;
+        private AppCompatActivity activity;
+        private WatermarkListener watermarkListener;
 
-        if (activity != null) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (!Settings.canDrawOverlays(activity)) {
-                    Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:" + activity.getPackageName()));
-                    activity.startActivityForResult(intent, 122);
-                    return;
+        public FinalStep setAppCompatActivity(@NonNull AppCompatActivity activity) {
+            this.activity = activity;
+            return this;
+        }
+
+        @Override
+        public AppWaterMarkBuilderStep setWatermarkProperty(@LayoutRes int overlayLayoutID,
+                                                            int opacity, @ColorRes int defaultBackgroundColor) {
+            this.overlayLayoutID = overlayLayoutID;
+            this.opacity = opacity;
+            try {
+                this.defaultBackgroundColor = activity.getResources().getColor(defaultBackgroundColor);
+            } catch (Exception ignored) {
+
+            }
+            return this;
+        }
+
+        public AppWaterMarkBuilderStep setWatermarkProperty(@LayoutRes int overlayLayoutID, int opacity) {
+            this.overlayLayoutID = overlayLayoutID;
+            this.opacity = opacity;
+            return this;
+        }
+
+        public AppWaterMarkBuilderStep setWatermarkProperty(@LayoutRes int overlayLayoutID) {
+            this.overlayLayoutID = overlayLayoutID;
+            return this;
+        }
+
+        private void build() {
+            try {
+                LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(LAYOUT_INFLATER_SERVICE);
+                final View oView = layoutInflater.inflate(overlayLayoutID, null);
+
+                try {
+                    oView.setBackgroundColor(Color.parseColor(ColorTransparentUtils
+                            .transparentColor(getBackgroundColor(oView), opacity)));
+                } catch (Exception exception) {
+                    postLog("Background color not set properly.", exception);
+                    oView.setBackgroundColor(defaultBackgroundColor);
                 }
+
+
+                final WindowManager.LayoutParams params;
+
+
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                    params = new WindowManager.LayoutParams(
+                            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                            PixelFormat.TRANSLUCENT);
+                } else {
+                    params = new WindowManager.LayoutParams(
+                            WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
+                            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
+                            PixelFormat.TRANSLUCENT);
+                }
+                final WindowManager wm = (WindowManager) activity.getSystemService(WINDOW_SERVICE);
+
+
+                activity.getApplication().registerActivityLifecycleCallbacks(new ApplicationEventTracker(
+                        new ApplicationEventTracker.EventListener() {
+
+                            void onApplicationStar() {
+                                try {
+                                    wm.addView(oView, params);
+                                } catch (Exception exception) {
+                                    postFailure(exception);
+                                }
+
+                            }
+
+                            void onApplicationStop() {
+                                try {
+                                    wm.removeView(oView);
+                                } catch (Exception exception) {
+                                    postFailure(exception);
+                                }
+                            }
+                        }
+                ));
+            }catch (Exception exception){
+                postFailure(exception);
             }
 
-            LayoutInflater layoutInflater = (LayoutInflater) activity.getSystemService(LAYOUT_INFLATER_SERVICE);
-            final View oView = layoutInflater.inflate(watermarkResourceID, null);
+        }
 
-            oView.setBackgroundColor(Color.parseColor(ColorTransparentUtils
-                    .transparentColor(getBackgroundColor(oView), opacity)));
+        @Override
+        public void showWatermark() {
+            if (activity != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    if (!Settings.canDrawOverlays(activity)) {
 
+                        /* There is a bug in this library which is "onFailed()" is calling always though
+                         * ACTION_MANAGE_OVERLAY_PERMISSION is given from setting screen
+                         * (Result code is being 0 or Activity.RESULT_CANCELED underneath). So a quick fix
+                         * is been done where.
+                         */
 
-            final WindowManager.LayoutParams params;
+                        new InlineActivityResult(activity)
+                                .startForResult(new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                        Uri.parse("package:" + activity.getPackageName())))
+                                .onSuccess(result -> {
+                                    if (Settings.canDrawOverlays(activity)) build();
+                                    else
+                                        postLog("Settings.canDrawOverlays(activity) is false", null);
+                                })
+                                .onFail(result -> {
+                                    if (Settings.canDrawOverlays(activity)) build();
+                                    else
+                                        postLog("Settings.canDrawOverlays(activity) is false", null);
+                                });
 
+                        postLog("Settings.canDrawOverlays(activity) is false. Please set " +
+                                "the give the overlay permission", null);
 
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-                params = new WindowManager.LayoutParams(
-                        WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        PixelFormat.TRANSLUCENT);
-            } else {
-                params = new WindowManager.LayoutParams(
-                        WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-                        WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
-                        PixelFormat.TRANSLUCENT);
+                    }else build();
+                } else postLog("target SDK is below then 23", null);
+
             }
-            final WindowManager wm = (WindowManager) activity.getSystemService(WINDOW_SERVICE);
 
+        }
 
-            activity.getApplication().registerActivityLifecycleCallbacks(new ApplicationEventTracker(
-                    new ApplicationEventTracker.EventListener() {
+        @Override
+        public void showWatermark(WatermarkListener watermarkListener) {
+            this.watermarkListener = watermarkListener;
+            showWatermark();
+        }
 
-                        void onApplicationStar() {
-                            wm.addView(oView, params);
-                        }
+        private void postFailure(Throwable throwable) {
+            if(throwable!=null&&watermarkListener!=null){
+                watermarkListener.onFailure(throwable.getLocalizedMessage(),throwable);
+            }
+        }
 
-                        void onApplicationStop() {
-                            wm.removeView(oView);
-                        }
-                    }
-            ));
+        private void postLog(String log, Throwable throwable) {
+            if(watermarkListener!=null&& !TextUtils.isEmpty(log)){
+                watermarkListener.showLog(log,throwable);
+            }
+        }
+
+        private int getBackgroundColor(View view) {
+            Drawable drawable = view.getBackground();
+            if (drawable instanceof ColorDrawable) {
+                ColorDrawable colorDrawable = (ColorDrawable) drawable;
+                return colorDrawable.getColor();
+            }
+            return defaultBackgroundColor;
         }
     }
 
-    private int getBackgroundColor(View view) {
-        Drawable drawable = view.getBackground();
-        if (drawable instanceof ColorDrawable) {
-            ColorDrawable colorDrawable = (ColorDrawable) drawable;
-            return colorDrawable.getColor();
-        }
-        return defaultBackgroundColor;
-    }
 
 }

@@ -4,7 +4,7 @@ android {
     compileSdkVersion 30
     defaultConfig {
         applicationId "com.gk.emon.app.watermark"
-        minSdkVersion 15
+        minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -24,6 +24,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.github.florent37:inline-activity-result-rx:1.0.4'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     testImplementation 'junit:junit:4.12'

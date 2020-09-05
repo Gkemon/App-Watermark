@@ -1,15 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:background="@android:color/holo_blue_dark"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-<TextView
-    android:text="MADE BY EMON"
-    android:textSize="40sp"
-    android:gravity="center"
-    android:textStyle="bold"
-    android:textColor="@android:color/white"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-</TextView>
+
+    <LinearLayout
+        android:padding="20dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ImageView
+            android:layout_margin="10dp"
+            android:src="@drawable/ic_water"
+            android:layout_width="50dp"
+            android:layout_height="50dp">
+        </ImageView>
+        <TextView
+            android:text="Hi! I'm your water mark.Pay some bucks then I will go."
+            android:textSize="40sp"
+            android:gravity="center"
+            android:textStyle="bold"
+            android:textColor="@color/colorWhite"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </TextView>
+    </LinearLayout>
+
 </LinearLayout>

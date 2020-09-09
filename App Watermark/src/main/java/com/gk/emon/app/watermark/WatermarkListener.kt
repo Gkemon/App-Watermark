@@ -1,10 +1,7 @@
-package com.gk.emon.app.watermark;
+package com.gk.emon.app.watermark
 
-interface WatermarkListener {
-
-    void onSuccess();
-
-    void showLog(String log, Throwable throwable);
-
-    void onFailure(String message, Throwable throwable);
+internal interface WatermarkListener {
+    fun onSuccess()
+    fun showLog(log: String?, throwable: Throwable?)
+    fun onFailure(message: String?, throwable: Throwable?)
 }

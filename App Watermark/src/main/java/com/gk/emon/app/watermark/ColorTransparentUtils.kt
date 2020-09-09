@@ -1,58 +1,56 @@
-package com.gk.emon.app.watermark;
+package com.gk.emon.app.watermark
 
-import android.util.Log;
+import android.R
+import android.util.Log
+import java.util.*
+import kotlin.math.roundToInt
 
 /**
  * Created by Hemant chand on 05/07/17.
  */
+object ColorTransparentUtils {
+    // This default color int
+    private const val defaultColorID = R.color.black
+    private const val defaultColor = "000000"
+    private const val TAG = "ColorTransparentUtils"
 
-public class ColorTransparentUtils {
+    /**
+     * This method convert numver into hexa number or we can say transparent code
+     *
+     * @param trans number of transparency you want
+     * @return it return hex decimal number or transparency code
+     */
+    private fun convert(trans: Int): String {
+        val hexString = Integer.toHexString((255 * trans / 100.toFloat()).roundToInt())
+        return (if (hexString.length < 2) "0" else "") + hexString
+    }
 
-	// This default color int
-	public static final int defaultColorID = android.R.color.black;
-	public static final String defaultColor = "000000";
-	public static final String TAG = "ColorTransparentUtils";
+    fun transparentColor(colorCode: Int, trans: Int): String {
+        return convertIntoColor(colorCode, trans)
+    }
 
-	/**
-	 * This method convert numver into hexa number or we can say transparent code
-	 *
-	 * @param trans number of transparency you want
-	 * @return it return hex decimal number or transparency code
-	 */
-	public static String convert(int trans) {
-		String hexString = Integer.toHexString(Math.round(255 * trans / 100));
-		return (hexString.length() < 2 ? "0" : "") + hexString;
-	}
-
-	public static String transparentColor(int colorCode, int trans) {
-		return convertIntoColor(colorCode, trans);
-	}
-
-
-	/**
-	 * Convert color code into transparent color code
-	 *
-	 * @param colorCode color code
-	 * @param transCode transparent number
-	 * @return transparent color code
-	 */
-	public static String convertIntoColor(int colorCode, int transCode) {
-		// convert color code into hexa string and remove starting 2 digit
-
-		String color = defaultColor;
-		try{
-			color = Integer.toHexString(colorCode).toUpperCase().substring(2);
-		}catch (Exception ignored){}
-
-		if (!color.isEmpty() && transCode < 100) {
-			if (color.trim().length() == 6) {
-				return "#" + convert(transCode) + color;
-			} else {
-				Log.d(TAG, "Color is already with transparency");
-				return convert(transCode) + color;
-			}
-		}
-		// if color is empty or any other problem occur then we return deafult color;
-		return "#" + Integer.toHexString(defaultColorID).toUpperCase().substring(2);
-	}
+    /**
+     * Convert color code into transparent color code
+     *
+     * @param colorCode color code
+     * @param transCode transparent number
+     * @return transparent color code
+     */
+    private fun convertIntoColor(colorCode: Int, transCode: Int): String {
+        // convert color code into hex string and remove starting 2 digit
+        var color = defaultColor
+        try {
+            color = Integer.toHexString(colorCode).toUpperCase(Locale.US).substring(2)
+        } catch (ignored: Exception) {
+        }
+        return if (!color.isEmpty() && transCode < 100) {
+            if (color.trim { it <= ' ' }.length == 6) {
+                "#" + convert(transCode) + color
+            } else {
+                Log.d(TAG, "Color is already with transparency")
+                convert(transCode) + color
+            }
+        } else "#" + Integer.toHexString(defaultColorID).toUpperCase(Locale.US).substring(2)
+        // if color is empty or any other problem occur then we return default color;
+    }
 }

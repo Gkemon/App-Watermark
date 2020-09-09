@@ -52,7 +52,6 @@ object AppWaterMarkBuilder {
             throw IllegalStateException(ERROR_MESSAGE_FIRST_CONFIG_MISSING)
     }
 
-    @Throws(Exception::class)
     @JvmStatic
     fun showWatermark() {
         if (appWaterMarkBuilder.isConfiguredWell())
@@ -92,15 +91,14 @@ object AppWaterMarkBuilder {
 
     class Builders : FinalStep, ActivityStep, AppWaterMarkBuilderStep, WatermarkHideShowContract {
         private var wm: WindowManager? = null
-        lateinit var overlaidView: View
-
-        //This is the main view resource id which we want to show as a watermark
+        private lateinit var overlaidView: View
+        /**This is the main view resource id which we want to show as a watermark*/
         @LayoutRes
         var overlayLayoutID = 0
         @ColorInt
         var defaultBackgroundColor = Color.BLACK
         @IntRange(from = 0,to = 100 )
-        var opacity = 50
+        var opacity = DEFAULT_OPACITY
         private var activity: AppCompatActivity? = null
         private var watermarkListener: WatermarkListener? = null
         private var params: WindowManager.LayoutParams? = null
@@ -112,6 +110,12 @@ object AppWaterMarkBuilder {
 
         fun isConfiguredWell(): Boolean {
             return isConfigured
+        }
+
+        companion object {
+            /** Opacity must be in between 0~100* otherwise it doesn't work*/
+            @IntRange(from = 0,to = 100 )
+            const val DEFAULT_OPACITY=50
         }
 
         override fun setWatermarkProperty(@LayoutRes overlayLayoutID: Int,

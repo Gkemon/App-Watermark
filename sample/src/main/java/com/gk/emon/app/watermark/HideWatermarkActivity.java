@@ -11,11 +11,9 @@ public class HideWatermarkActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_hide_watermark);
         findViewById(R.id.btn_hide_watermark).setOnClickListener(view -> {
-            try {
+
                 AppWaterMarkBuilder.hideWatermark();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+
         });
 
     }

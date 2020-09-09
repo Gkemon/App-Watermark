@@ -37,7 +37,6 @@ object AppWaterMarkBuilder {
         return appWaterMarkBuilder
     }
 
-    @Throws(Exception::class)
     @JvmStatic
     fun hideWatermark() {
         if (appWaterMarkBuilder.isConfiguredWell())
@@ -46,7 +45,6 @@ object AppWaterMarkBuilder {
 
     }
 
-    @Throws(Exception::class)
     @JvmStatic
     fun hideWatermark(watermarkListener: WatermarkListener) {
         if (appWaterMarkBuilder.isConfiguredWell())
@@ -63,7 +61,6 @@ object AppWaterMarkBuilder {
     }
 
     @JvmStatic
-    @Throws(Exception::class)
     fun showWatermark(watermarkListener: WatermarkListener) {
         if (appWaterMarkBuilder.isConfiguredWell())
             appWaterMarkBuilder.showWatermark(watermarkListener) else

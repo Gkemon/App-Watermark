@@ -17,13 +17,20 @@ import androidx.annotation.ColorRes
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import com.github.florent37.inlineactivityresult.InlineActivityResult
-import com.github.florent37.inlineactivityresult.Result
 
 /**
  * Created by Gk Emon on 12/3/2019.
  */
 object AppWaterMarkBuilder {
-     var appWaterMarkBuilder: Builders? = null
+    private const val URL_FIRST_CONFIG = "https://github.com/Gkemon/App-Watermark"
+    private const val ERROR_MESSAGE_FIRST_CONFIG_MISSING = "AppWaterMarkBuilder is null or " +
+            "not configured well. First configure it." +
+            " Go to here to see how to config it first : " + URL_FIRST_CONFIG;
+    private var appWaterMarkBuilder: Builders
+
+    init {
+        appWaterMarkBuilder = Builders()
+    }
 
     @JvmStatic
     @Synchronized
@@ -32,28 +39,36 @@ object AppWaterMarkBuilder {
     }
 
     @Throws(Exception::class)
+    @JvmStatic
     fun hideWatermark() {
-        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.hideWatermark()
-        else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
+        if (appWaterMarkBuilder.isConfiguredWell())
+            appWaterMarkBuilder.hideWatermark() else
+            throw IllegalStateException(ERROR_MESSAGE_FIRST_CONFIG_MISSING)
+
     }
 
     @Throws(Exception::class)
+    @JvmStatic
     fun hideWatermark(watermarkListener: WatermarkListener) {
-        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.hideWatermark(watermarkListener)
-        else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
+        if (appWaterMarkBuilder.isConfiguredWell())
+            appWaterMarkBuilder.hideWatermark(watermarkListener) else
+            throw IllegalStateException(ERROR_MESSAGE_FIRST_CONFIG_MISSING)
     }
 
     @Throws(Exception::class)
+    @JvmStatic
     fun showWatermark() {
-        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.showWatermark()
-        else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
+        if (appWaterMarkBuilder.isConfiguredWell())
+            appWaterMarkBuilder.showWatermark() else
+            throw Exception(ERROR_MESSAGE_FIRST_CONFIG_MISSING)
     }
 
     @JvmStatic
     @Throws(Exception::class)
     fun showWatermark(watermarkListener: WatermarkListener) {
-        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.showWatermark(watermarkListener)
-        else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
+        if (appWaterMarkBuilder.isConfiguredWell())
+            appWaterMarkBuilder.showWatermark(watermarkListener) else
+            throw Exception(ERROR_MESSAGE_FIRST_CONFIG_MISSING)
     }
 
     interface ActivityStep {
@@ -83,18 +98,25 @@ object AppWaterMarkBuilder {
     class Builders : FinalStep, ActivityStep, AppWaterMarkBuilderStep, WatermarkHideShowContract {
         private var wm: WindowManager? = null
         lateinit var overlaidView: View
+
         //This is the main view resource id which we want to show as a watermark
         @LayoutRes
         var overlayLayoutID = 0
+
         @ColorInt
         var defaultBackgroundColor = Color.BLACK
         var opacity = 50
         private var activity: AppCompatActivity? = null
-        lateinit var watermarkListener: WatermarkListener
+        private var watermarkListener: WatermarkListener? = null
         private var params: WindowManager.LayoutParams? = null
+        private var isConfigured = false;
         override fun setAppCompatActivity(activity: AppCompatActivity): FinalStep {
             this.activity = activity
             return this
+        }
+
+        fun isConfiguredWell(): Boolean {
+            return isConfigured;
         }
 
         override fun setWatermarkProperty(@LayoutRes overlayLayoutID: Int,
@@ -104,6 +126,12 @@ object AppWaterMarkBuilder {
             try {
                 this.defaultBackgroundColor = activity!!.resources.getColor(defaultBackgroundColor)
             } catch (ignored: Exception) {
+                val stackTraceElement = StackTraceElement(AppWaterMarkBuilder::class.simpleName,
+                        "setWatermarkProperty",
+                        AppWaterMarkBuilder::class.simpleName + ".kt", 119)
+                watermarkListener?.showLog("An error occurred in setWatermarkProperty (Line: " +
+                        stackTraceElement + ") while setting \"defaultBackgroundColor\" property." +
+                        "The error message is " + ignored.localizedMessage + ".", ignored)
             }
             return this
         }
@@ -127,7 +155,10 @@ object AppWaterMarkBuilder {
                     overlaidView.setBackgroundColor(Color.parseColor(ColorTransparentUtils
                             .transparentColor(getBackgroundColor(overlaidView), opacity)))
                 } catch (exception: Exception) {
-                    postLog("Background color not set properly.", exception)
+                    val errorLine = StackTraceElement(AppWaterMarkBuilder::class.simpleName,
+                            "setWatermarkProperty",
+                            AppWaterMarkBuilder::class.simpleName + ".kt", 154).fileName
+                    postLog("Background color not set properly. (Line: $errorLine)", exception)
                     overlaidView.setBackgroundColor(defaultBackgroundColor)
                 }
                 params = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -141,10 +172,16 @@ object AppWaterMarkBuilder {
                             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE,
                             PixelFormat.TRANSLUCENT)
                 }
-                if (wm == null) {
-                    wm = activity!!.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+
+                /** Alternative of null check by if else in kotlin*/
+                wm?.let {
+                    isConfigured = true
+                } ?: let {
+                    wm = activity?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
                 }
+
             } catch (exception: Exception) {
+                isConfigured = false;
                 postFailure(exception)
             }
         }
@@ -181,7 +218,7 @@ object AppWaterMarkBuilder {
 
         override fun showWatermark() {
             try {
-                wm!!.addView(overlaidView, params)
+                wm?.addView(overlaidView, params)
                 postSuccess()
             } catch (exception: Exception) {
                 postFailure(exception)
@@ -199,7 +236,7 @@ object AppWaterMarkBuilder {
         }
 
         override fun showWatermarkAfterConfig() {
-            if (activity != null) {
+            activity?.let {
                 buildConfiguration()
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     if (!Settings.canDrawOverlays(activity)) {
@@ -211,17 +248,22 @@ object AppWaterMarkBuilder {
                         InlineActivityResult(activity)
                                 .startForResult(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                         Uri.parse("package:" + activity!!.packageName)))
-                                .onSuccess { if (Settings.canDrawOverlays(activity))
-                                    addWatermarkWithinApplicationLifecycle(wm!!, overlaidView, params!!)
-                                else postLog("Settings.canDrawOverlays(activity) is false", null) }
-                                .onFail { if (Settings.canDrawOverlays(activity))
-                                    addWatermarkWithinApplicationLifecycle(wm!!, overlaidView, params!!)
-                                else postLog("Settings.canDrawOverlays(activity) is false", null) }
+                                .onSuccess {
+                                    if (Settings.canDrawOverlays(activity))
+                                        addWatermarkWithinApplicationLifecycle(wm!!, overlaidView, params!!)
+                                    else postLog("Settings.canDrawOverlays(activity) is false", null)
+                                }
+                                .onFail {
+                                    if (Settings.canDrawOverlays(activity))
+                                        addWatermarkWithinApplicationLifecycle(wm!!, overlaidView, params!!)
+                                    else postLog("Settings.canDrawOverlays(activity) is false", null)
+                                }
                         postLog("Settings.canDrawOverlays(activity) is false. Please set " +
                                 "the give the overlay permission", null)
                     } else addWatermarkWithinApplicationLifecycle(wm!!, overlaidView, params!!)
                 } else postLog("target SDK is below then 23", null)
-            } else postLog("Activity is null or not set", null)
+            } ?: postLog("Activity is null or not set", null)
+
         }
 
         override fun hideWatermark() {
@@ -239,16 +281,16 @@ object AppWaterMarkBuilder {
         }
 
         private fun postFailure(throwable: Throwable) {
-            watermarkListener.onFailure(throwable.localizedMessage, throwable)
+            watermarkListener?.onFailure(throwable.localizedMessage, throwable)
         }
 
         private fun postSuccess() {
-            watermarkListener.onSuccess()
+            watermarkListener?.onSuccess()
         }
 
         private fun postLog(log: String, throwable: Throwable?) {
             if (!TextUtils.isEmpty(log)) {
-                watermarkListener!!.showLog(log, throwable)
+                watermarkListener?.showLog(log, throwable)
             }
         }
 

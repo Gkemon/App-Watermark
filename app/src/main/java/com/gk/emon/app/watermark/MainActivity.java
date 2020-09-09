@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
 
         AppWaterMarkBuilder.doConfigure()
                 .setAppCompatActivity(MainActivity.this)
-                .setWatermarkProperty(R.layout.layout_water_mark,20,R.color.colorAccent)
+                .setWatermarkProperty(R.layout.layout_water_mark, 40, R.color.colorAccent)
                 .showWatermarkAfterConfig(new WatermarkListener() {
                     @Override
                     public void onSuccess() {

@@ -34,7 +34,7 @@ object AppWaterMarkBuilder {
 
     @JvmStatic
     @Synchronized
-    fun doConfigure(): ActivityStep? {
+    fun doConfigure(): ActivityStep {
         return appWaterMarkBuilder
     }
 
@@ -109,14 +109,14 @@ object AppWaterMarkBuilder {
         private var activity: AppCompatActivity? = null
         private var watermarkListener: WatermarkListener? = null
         private var params: WindowManager.LayoutParams? = null
-        private var isConfigured = false;
+        private var isConfigured: Boolean = false
         override fun setAppCompatActivity(activity: AppCompatActivity): FinalStep {
             this.activity = activity
             return this
         }
 
         fun isConfiguredWell(): Boolean {
-            return isConfigured;
+            return isConfigured
         }
 
         override fun setWatermarkProperty(@LayoutRes overlayLayoutID: Int,
@@ -174,14 +174,13 @@ object AppWaterMarkBuilder {
                 }
 
                 /** Alternative of null check by if else in kotlin*/
-                wm?.let {
-                    isConfigured = true
-                } ?: let {
+                wm?.let { isConfigured = true } ?: let {
                     wm = activity?.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+                    isConfigured = true
                 }
 
             } catch (exception: Exception) {
-                isConfigured = false;
+                isConfigured = false
                 postFailure(exception)
             }
         }

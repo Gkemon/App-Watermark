@@ -108,12 +108,14 @@ object AppWaterMarkBuilder {
             return this
         }
 
+        /**if true that means it's all property is set by step builders and it it ready to show or
+         * hide the watermark*/
         fun isConfiguredWell(): Boolean {
             return isConfigured
         }
 
         companion object {
-            /** Opacity must be in between 0~100* otherwise it doesn't work*/
+            /** Opacity must be in between 0~100 otherwise it doesn't work*/
             @IntRange(from = 0,to = 100 )
             const val DEFAULT_OPACITY=50
         }

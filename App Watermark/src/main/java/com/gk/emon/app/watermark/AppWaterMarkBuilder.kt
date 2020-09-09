@@ -23,32 +23,37 @@ import com.github.florent37.inlineactivityresult.Result
  * Created by Gk Emon on 12/3/2019.
  */
 object AppWaterMarkBuilder {
-    private var appWaterMarkBuilder: Builders? = null
+     var appWaterMarkBuilder: Builders? = null
+
     @JvmStatic
     @Synchronized
     fun doConfigure(): ActivityStep? {
-        return if (appWaterMarkBuilder != null) appWaterMarkBuilder else Builders().also { appWaterMarkBuilder = it }
+        return appWaterMarkBuilder
     }
 
     @Throws(Exception::class)
     fun hideWatermark() {
-        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.hideWatermark() else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
+        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.hideWatermark()
+        else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
     }
 
     @Throws(Exception::class)
-    fun hideWatermark(watermarkListener: WatermarkListener?) {
-        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.hideWatermark(watermarkListener) else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
+    fun hideWatermark(watermarkListener: WatermarkListener) {
+        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.hideWatermark(watermarkListener)
+        else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
     }
 
     @Throws(Exception::class)
     fun showWatermark() {
-        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.showWatermark() else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
+        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.showWatermark()
+        else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
     }
 
     @JvmStatic
     @Throws(Exception::class)
-    fun showWatermark(watermarkListener: WatermarkListener?) {
-        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.showWatermark(watermarkListener) else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
+    fun showWatermark(watermarkListener: WatermarkListener) {
+        if (appWaterMarkBuilder != null) appWaterMarkBuilder!!.showWatermark(watermarkListener)
+        else throw Exception("AppWaterMarkBuilder is null. First configure it. ")
     }
 
     interface ActivityStep {
@@ -56,38 +61,36 @@ object AppWaterMarkBuilder {
     }
 
     interface FinalStep {
-        fun setWatermarkProperty(@LayoutRes resID: Int, opacity: Int,
+        fun setWatermarkProperty(@LayoutRes overlayLayoutID: Int, opacity: Int,
                                  @ColorRes defaultBackgroundColor: Int): AppWaterMarkBuilderStep
 
-        fun setWatermarkProperty(@LayoutRes resID: Int, opacity: Int): AppWaterMarkBuilderStep
-        fun setWatermarkProperty(@LayoutRes resID: Int): AppWaterMarkBuilderStep
+        fun setWatermarkProperty(@LayoutRes overlayLayoutID: Int, opacity: Int): AppWaterMarkBuilderStep
+        fun setWatermarkProperty(@LayoutRes overlayLayoutID: Int): AppWaterMarkBuilderStep
     }
 
     interface AppWaterMarkBuilderStep {
-        fun showWatermarkAfterConfig(watermarkListener: WatermarkListener?)
+        fun showWatermarkAfterConfig(watermarkListener: WatermarkListener)
         fun showWatermarkAfterConfig()
     }
 
     private interface WatermarkHideShowContract {
         fun showWatermark()
-        fun showWatermark(watermarkListener: WatermarkListener?)
+        fun showWatermark(watermarkListener: WatermarkListener)
         fun hideWatermark()
-        fun hideWatermark(watermarkListener: WatermarkListener?)
+        fun hideWatermark(watermarkListener: WatermarkListener)
     }
 
-    private class Builders : FinalStep, ActivityStep, AppWaterMarkBuilderStep, WatermarkHideShowContract {
-        var wm: WindowManager? = null
-        var overlaidView: View? = null
-
+    class Builders : FinalStep, ActivityStep, AppWaterMarkBuilderStep, WatermarkHideShowContract {
+        private var wm: WindowManager? = null
+        lateinit var overlaidView: View
         //This is the main view resource id which we want to show as a watermark
         @LayoutRes
         var overlayLayoutID = 0
-
         @ColorInt
         var defaultBackgroundColor = Color.BLACK
         var opacity = 50
         private var activity: AppCompatActivity? = null
-        private var watermarkListener: WatermarkListener? = null
+        lateinit var watermarkListener: WatermarkListener
         private var params: WindowManager.LayoutParams? = null
         override fun setAppCompatActivity(activity: AppCompatActivity): FinalStep {
             this.activity = activity
@@ -153,13 +156,13 @@ object AppWaterMarkBuilder {
          * @param overlaidView
          * @param params
          */
-        private fun addWatermarkWithinApplicationLifecycle(wm: WindowManager, overlaidView: View,
-                                                           params: WindowManager.LayoutParams) {
+        private fun addWatermarkWithinApplicationLifecycle(wm: WindowManager?, overlaidView: View,
+                                                           params: WindowManager.LayoutParams?) {
             if (activity != null) activity!!.application.registerActivityLifecycleCallbacks(ApplicationEventTracker(
                     object : ApplicationEventTracker.EventListener() {
                         override fun onApplicationStar() {
                             try {
-                                wm.addView(overlaidView, params)
+                                wm!!.addView(overlaidView, params)
                             } catch (exception: Exception) {
                                 postFailure(exception)
                             }
@@ -167,7 +170,7 @@ object AppWaterMarkBuilder {
 
                         override fun onApplicationStop() {
                             try {
-                                wm.removeView(overlaidView)
+                                wm!!.removeView(overlaidView)
                             } catch (exception: Exception) {
                                 postFailure(exception)
                             }
@@ -185,13 +188,13 @@ object AppWaterMarkBuilder {
             }
         }
 
-        override fun showWatermark(watermarkListener: WatermarkListener?) {
+        override fun showWatermark(watermarkListener: WatermarkListener) {
             this.watermarkListener = watermarkListener
             showWatermark()
         }
 
-        override fun hideWatermark(watermarkListener: WatermarkListener?) {
-            if (watermarkListener != null) this.watermarkListener = watermarkListener
+        override fun hideWatermark(watermarkListener: WatermarkListener) {
+            this.watermarkListener = watermarkListener
             hideWatermark()
         }
 
@@ -208,11 +211,15 @@ object AppWaterMarkBuilder {
                         InlineActivityResult(activity)
                                 .startForResult(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
                                         Uri.parse("package:" + activity!!.packageName)))
-                                .onSuccess { result: Result? -> if (Settings.canDrawOverlays(activity)) addWatermarkWithinApplicationLifecycle(wm!!, overlaidView!!, params!!) else postLog("Settings.canDrawOverlays(activity) is false", null) }
-                                .onFail { result: Result? -> if (Settings.canDrawOverlays(activity)) addWatermarkWithinApplicationLifecycle(wm!!, overlaidView!!, params!!) else postLog("Settings.canDrawOverlays(activity) is false", null) }
+                                .onSuccess { if (Settings.canDrawOverlays(activity))
+                                    addWatermarkWithinApplicationLifecycle(wm!!, overlaidView, params!!)
+                                else postLog("Settings.canDrawOverlays(activity) is false", null) }
+                                .onFail { if (Settings.canDrawOverlays(activity))
+                                    addWatermarkWithinApplicationLifecycle(wm!!, overlaidView, params!!)
+                                else postLog("Settings.canDrawOverlays(activity) is false", null) }
                         postLog("Settings.canDrawOverlays(activity) is false. Please set " +
                                 "the give the overlay permission", null)
-                    } else addWatermarkWithinApplicationLifecycle(wm!!, overlaidView!!, params!!)
+                    } else addWatermarkWithinApplicationLifecycle(wm!!, overlaidView, params!!)
                 } else postLog("target SDK is below then 23", null)
             } else postLog("Activity is null or not set", null)
         }
@@ -226,23 +233,21 @@ object AppWaterMarkBuilder {
             }
         }
 
-        override fun showWatermarkAfterConfig(watermarkListener: WatermarkListener?) {
+        override fun showWatermarkAfterConfig(watermarkListener: WatermarkListener) {
             this.watermarkListener = watermarkListener
             showWatermarkAfterConfig()
         }
 
-        private fun postFailure(throwable: Throwable?) {
-            if (throwable != null && watermarkListener != null) {
-                watermarkListener!!.onFailure(throwable.localizedMessage, throwable)
-            }
+        private fun postFailure(throwable: Throwable) {
+            watermarkListener.onFailure(throwable.localizedMessage, throwable)
         }
 
         private fun postSuccess() {
-            if (watermarkListener != null) watermarkListener!!.onSuccess()
+            watermarkListener.onSuccess()
         }
 
         private fun postLog(log: String, throwable: Throwable?) {
-            if (watermarkListener != null && !TextUtils.isEmpty(log)) {
+            if (!TextUtils.isEmpty(log)) {
                 watermarkListener!!.showLog(log, throwable)
             }
         }

@@ -1,20 +1,14 @@
-package com.gk.emon.app.watermark;
+package com.gk.emon.app.watermark
 
-import android.os.Bundle;
+import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import com.gk.emon.app.watermark.AppWaterMarkBuilder.hideWatermark
 
-import androidx.appcompat.app.AppCompatActivity;
-
-public class HideWatermarkActivity extends AppCompatActivity {
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_hide_watermark);
-        findViewById(R.id.btn_hide_watermark).setOnClickListener(view -> {
-
-                AppWaterMarkBuilder.hideWatermark();
-
-        });
-
+class HideWatermarkActivity : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_hide_watermark)
+        findViewById<View>(R.id.btn_hide_watermark).setOnClickListener {hideWatermark() }
     }
 }

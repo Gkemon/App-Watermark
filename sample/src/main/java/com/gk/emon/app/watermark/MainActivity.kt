@@ -12,7 +12,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        doConfigure()
+                 doConfigure()
                 .setAppCompatActivity(this@MainActivity)
                 .setWatermarkProperty(R.layout.layout_water_mark, 40, R.color.colorAccent)
                 .showWatermarkAfterConfig(object : WatermarkListener {

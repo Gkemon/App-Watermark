@@ -12,9 +12,8 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.WindowManager
-import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.annotation.LayoutRes
+import androidx.annotation.*
+import androidx.annotation.IntRange
 import androidx.appcompat.app.AppCompatActivity
 import com.github.florent37.inlineactivityresult.InlineActivityResult
 
@@ -76,10 +75,9 @@ object AppWaterMarkBuilder {
     }
 
     interface FinalStep {
-        fun setWatermarkProperty(@LayoutRes overlayLayoutID: Int, opacity: Int,
+        fun setWatermarkProperty(@LayoutRes overlayLayoutID: Int,@IntRange(from = 0,to = 100 )opacity: Int,
                                  @ColorRes defaultBackgroundColor: Int): AppWaterMarkBuilderStep
-
-        fun setWatermarkProperty(@LayoutRes overlayLayoutID: Int, opacity: Int): AppWaterMarkBuilderStep
+        fun setWatermarkProperty(@LayoutRes overlayLayoutID: Int,@IntRange(from = 0,to = 100 ) opacity: Int): AppWaterMarkBuilderStep
         fun setWatermarkProperty(@LayoutRes overlayLayoutID: Int): AppWaterMarkBuilderStep
     }
 
@@ -102,9 +100,9 @@ object AppWaterMarkBuilder {
         //This is the main view resource id which we want to show as a watermark
         @LayoutRes
         var overlayLayoutID = 0
-
         @ColorInt
         var defaultBackgroundColor = Color.BLACK
+        @IntRange(from = 0,to = 100 )
         var opacity = 50
         private var activity: AppCompatActivity? = null
         private var watermarkListener: WatermarkListener? = null
@@ -152,8 +150,17 @@ object AppWaterMarkBuilder {
                 val layoutInflater = activity!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
                 overlaidView = layoutInflater.inflate(overlayLayoutID, null)
                 try {
-                    overlaidView.setBackgroundColor(Color.parseColor(ColorTransparentUtils
+                    /**defaultBackgroundColor not black means user set a default color as watermark
+                     * background.If default color is black that means a default color is not set.
+                     * So then it should be get the background color from the inflated view from layout
+                     * resource id which will be shown as the water mark. If all of these approach get any exception
+                     * then black color with 50% opacity (default opacity) will be set*/
+                    if(defaultBackgroundColor!=Color.BLACK){
+                        overlaidView.setBackgroundColor(Color.parseColor(ColorTransparentUtils
+                                .transparentColor(defaultBackgroundColor, opacity)))
+                    }else overlaidView.setBackgroundColor(Color.parseColor(ColorTransparentUtils
                             .transparentColor(getBackgroundColor(overlaidView), opacity)))
+
                 } catch (exception: Exception) {
                     val errorLine = StackTraceElement(AppWaterMarkBuilder::class.simpleName,
                             "setWatermarkProperty",
@@ -293,8 +300,8 @@ object AppWaterMarkBuilder {
             }
         }
 
-        private fun getBackgroundColor(view: View?): Int {
-            val drawable = view!!.background
+        private fun getBackgroundColor(view: View): Int {
+            val drawable = view.background
             if (drawable is ColorDrawable) {
                 return drawable.color
             }

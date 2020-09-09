@@ -76,13 +76,13 @@ public class AppWaterMarkBuilder {
 
     public interface AppWaterMarkBuilderStep {
         void showWatermarkAfterConfig(WatermarkListener watermarkListener);
+        void showWatermarkAfterConfig();
     }
     private interface WatermarkHideShowContract {
         void showWatermark();
         void showWatermark(WatermarkListener watermarkListener);
         void hideWatermark();
         void hideWatermark(WatermarkListener watermarkListener);
-        void showWatermarkAfterConfig();
     }
 
 

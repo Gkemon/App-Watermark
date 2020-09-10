@@ -1,15 +1,15 @@
 <!-- ⚠️ This README has been generated from the file(s) "blueprint.md" link - https://github.com/andreasbm/readme ⚠️--><p align="center">
-  <img src="https://mir-s3-cdn-cf.behance.net/project_modules/disp/a685e7437236.5600962f5b4c4.jpg" alt="Logo" width="150" height="150"  />
+  <img src="https://github.com/Gkemon/App-Watermark/blob/master/water%20mark.png" alt="Logo" width="150" height="150"  />
 </p>
-<h1 align="center">XML to PDF Generator For Android</h1>
+<h1 align="center">App watermark for Android (Java+Kotlin)</h1>
  <p align="center">
-		<a href="https://github.com/Gkemon/XML-to-PDF-generator"><img alt="Maintained" src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" height="20"/></a>
-	<a href="https://github.com/Gkemon/XML-to-PDF-generator"><img alt="Maintained" src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg" height="20"/></a>
+		<a href="https://github.com/Gkemon/App-Watermark"><img alt="Maintained" src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" height="20"/></a>
+	<a href="https://github.com/Gkemon/App-Watermark"><img alt="Maintained" src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg" height="20"/></a>
 	</p>
 
 <p align="center">
-  <b>Automatically generate PDF file from XML file or Java's View object in Android</b></br>
-  <p align="center"> Make PDF from Android layout resources (e.g - R.layout.myLayout,R.id.viewID), Java's view ids or directly views objects <p>
+  <b>Create an watermark for your Android app.</b></br>
+  <p align="center">Suppose you have a freemium app and want to show an watermark in your app after a free trail to lessen it's user experience to buy the premium version. Then this library is compatible for your use case. Not only this use case, you can use it in a lot of use cases where you wish to lessen the content access capacity of your users   <p>
 </p>
 
 <br />
@@ -19,8 +19,8 @@
   <!-- GIF <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/demo.gif" alt="Demo" width="800" /> --!>
 </p>
 
-* **Simple**: Extremely simple to use. For using <b>Step Builder Design Patten</b> undernath,here IDE greatly helps developers to complete the steps for creating a PDF from XMLs.
-* **Powerful**: Customize almost everything.
+* **Simple**: Extremely simple to use. For using <b>Step Builder Design Patten</b> undernath,here IDE greatly helps developers to complete the steps for creating an watermark.
+* **Powerful**: Customize almost everything. It uses a layout resource which will be shown in your app as an watermark. So as an developer,you are very used to layout resources and you are very powerful to customize it.
 * **Transparent**: It shows logs,success-responses, failure-responses , that's why developer will nofity any event inside the process. 
 
 <details>

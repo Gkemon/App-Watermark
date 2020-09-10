@@ -51,10 +51,10 @@ allprojects {
 }
 ```
 
-**Step 2**. Add the dependency
+**Step 2**. Add the dependency [![](https://jitpack.io/v/Gkemon/App-Watermark.svg)](https://jitpack.io/#Gkemon/App-Watermark)
 ```
 dependencies {
-        implementation 'com.github.Gkemon:XML-to-PDF-generator:1.0'
+        implementation 'com.github.Gkemon:App-Watermark:1.0.0'
 }
 ```	
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#getting-started-quick)

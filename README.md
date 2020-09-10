@@ -81,7 +81,7 @@ AppWaterMarkBuilder.doConfigure()
                 .setWatermarkProperty(R.layout.layout_water_mark)
 		/* You can also set opacity or opacity with a default background color.
 		 * Just call like that ".setWatermarkProperty(R.layout.layout_water_mark, 40, R.color.colorAccent)" */
-                .showWatermarkAfterConfig(new WatermarkListener() {
+                .showWatermarkAfterConfig(new WatermarkListener() { /*This callback is also optional here */
                     @Override
                     public void onSuccess() {
                      Log.d(TAG, "Successfully showing water mark");
@@ -153,7 +153,7 @@ AppWaterMarkBuilder.doConfigure()
                 .setWatermarkProperty(R.layout.layout_water_mark)
 		/* You can also set opacity or opacity with a default background color.
 		 * Just call like that ".setWatermarkProperty(R.layout.layout_water_mark, 40, R.color.colorAccent)" */
-                .showWatermarkAfterConfig(object : WatermarkListener {
+                .showWatermarkAfterConfig(object : WatermarkListener { /*This callback is also optional here */
                     override fun onSuccess() {
                         Log.d(TAG, "Successfully showing water mark")
                     }

@@ -16,7 +16,7 @@
 
 
 <p align="center">
-  <!-- GIF <img src="https://raw.githubusercontent.com/andreasbm/readme/master/assets/demo.gif" alt="Demo" width="800" /> --!>
+  <img src="https://github.com/Gkemon/App-Watermark/blob/master/watermark.gif" alt="Demo" width="800" /> 
 </p>
 
 * **Simple**: Extremely simple to use. For using <b>Step Builder Design Patten</b> undernath,here IDE greatly helps developers to complete the steps for creating an watermark.

@@ -9,7 +9,7 @@
 
 <p align="center">
   <b>Create an watermark for your Android app.</b></br>
-  <p align="center">Suppose you have a freemium app and want to show an watermark in your app after a free trail to lessen it's user experience to buy the premium version. Then this library is compatible for your use case. Not only this use case, you can use it in a lot of use cases where you wish to lessen the content access capacity of your users   <p>
+  <p align="center">Suppose you have a freemium app and wanna show an watermark in your app after a free trial to lessen it's user experience to buy the premium version. Then this library is compatible for your use-case. Not only this use-case, you can use it in a lot of use-cases where you wish to lessen the content access capacity of your users or preview a content all over the app content<p>
 </p>
 
 <br />
@@ -20,7 +20,7 @@
 </p>
 
 * **Simple**: Extremely simple to use. For using <b>Step Builder Design Patten</b> undernath,here IDE greatly helps developers to complete the steps for creating an watermark.
-* **Powerful**: Customize almost everything. It uses a layout resource which will be shown in your app as an watermark. So as an developer,you are very used to layout resources and you are very powerful to customize it.
+* **Powerful**: Customize almost everything. It uses a layout resource which will be shown in your app as an watermark. So as an developer,you are very used to with layout resources and you are very powerful to customize it.
 * **Transparent**: It shows logs,success-responses, failure-responses , that's why developer will nofity any event inside the process. 
 
 <details>
@@ -64,9 +64,9 @@ dependencies {
 ## ➤ Getting Started
 
 You can generate app <b>Watermark</b> using just 2 mandatory components.
-* <b><i>AppCompatActivity.</i></b> (From which activity you wanna show your watermark, <i>e.g:</i> ```MainActivity```) **[Mandatory]**
+* <b><i>AppCompatActivity.</i></b> (From which activity you wanna acatually show your watermark, <i>e.g:</i> ```MainActivity```) **[Mandatory]**
 * <b><i>Layout resource.</i></b> (The layout which you wanna show as the watermark, <i>e.g:</i> ```R.layout.layout_water_mark```) **[Mandatory]**
-* <b><i>Background color.</i></b> ( <i>e.g:</i> ```R.color.deepRed```) **[Optional]**
+* <b><i>Background color.</i></b> ( <i>e.g:</i> ```R.color.deepRed```. If you skip it then it will consider the background color of your defined layout resourc.) **[Optional]**
 * <b><i>Opacity.</i></b> (Default opacity of background color is 50 if you don't set opacity manually.Best practice is never set it above 80 because it will decrease the transparent level of your background color, which might be cause not showing the main UI or content properly) **[Optional]**
 </i></b>
 
@@ -136,7 +136,7 @@ AppWaterMarkBuilder.doConfigure()
 
 ## ➤ License
 
-The source code is licensed under the [Apache License 2.0](https://github.com/Gkemon/XML-to-PDF-generator/blob/master/LICENSE). 
+The source code is licensed under the [Apache License 2.0](https://github.com/Gkemon/App-Watermark/blob/master/LICENSE). 
 
 
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#license)

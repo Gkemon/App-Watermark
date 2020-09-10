@@ -73,6 +73,7 @@ You can generate app <b>Watermark</b> using just 2 mandatory components.
 
 ### By Java:
 
+#### First initialize it from an activity from where you want to show the watermark- 
 
 ```java
 AppWaterMarkBuilder.doConfigure()
@@ -97,8 +98,54 @@ AppWaterMarkBuilder.doConfigure()
                     }
                 });
 ```
+#### Then you can hide and show it from any where in your app-
+```
+  /* For hiding the watermark without callback*/
+  AppWaterMarkBuilder.hideWatermark() 
+ 
+  /* For hiding the watermark with callback*/
+  AppWaterMarkBuilder.hideWatermark(new WatermarkListener() {
+                    @Override
+                    public void onSuccess() {
+                     Log.d(TAG, "Successfully showing water mark");
+                    }
+
+                    @Override
+                    public void onFailure(String message, Throwable throwable) {
+		     Log.d(TAG, "Failed: "+message");
+                    }
+
+                    @Override
+                    public void showLog(String log, @Nullable Throwable throwable) {
+ 		     Log.d(TAG, "Log: "+log");
+                    }
+                })
+    
+    /* For showing the watermark without callback*/
+  AppWaterMarkBuilder.showWatermark() 
+ 
+  /* For showing the watermark with callback*/
+  AppWaterMarkBuilder.showWatermark(new WatermarkListener() {
+                    @Override
+                    public void onSuccess() {
+                     Log.d(TAG, "Successfully showing water mark");
+                    }
+
+                    @Override
+                    public void onFailure(String message, Throwable throwable) {
+		     Log.d(TAG, "Failed: "+message");
+                    }
+
+                    @Override
+                    public void showLog(String log, @Nullable Throwable throwable) {
+ 		     Log.d(TAG, "Log: "+log");
+                    }
+                })
+```   
 
 ### By Kotlin:
+
+#### First initialize it from an activity from where you want to show the watermark- 
 
 ```kotlin
                  doConfigure()
@@ -120,6 +167,45 @@ AppWaterMarkBuilder.doConfigure()
                     }
                 })
 ```
+#### Then you can hide and show it from any where in your app-
+```
+   /* For hiding the watermark without callback*/
+   AppWaterMarkBuilder.hideWatermark() 
+ 
+   /* For hiding the watermark with callback*/
+   AppWaterMarkBuilder.hideWatermark(new WatermarkListener() {object : WatermarkListener {
+                override fun onSuccess() {
+                    Log.d(MainActivity.TAG, "Successfully showing water mark")
+                }
+
+                override fun onFailure(message: String?, throwable: Throwable?) {
+                    Log.d(MainActivity.TAG, "Failed: $message")
+                }
+
+                override fun showLog(log: String?, throwable: Throwable?) {
+                    Log.d(MainActivity.TAG, "Log: $log")
+                }
+            })
+    
+   /* For showing the watermark without callback*/
+    AppWaterMarkBuilder.showWatermark() 
+ 
+   /* For showing the watermark with callback*/
+    AppWaterMarkBuilder.showWatermark(object : WatermarkListener {
+                override fun onSuccess() {
+                    Log.d(MainActivity.TAG, "Successfully showing water mark")
+                }
+
+                override fun onFailure(message: String?, throwable: Throwable?) {
+                    Log.d(MainActivity.TAG, "Failed: $message")
+                }
+
+                override fun showLog(log: String?, throwable: Throwable?) {
+                    Log.d(MainActivity.TAG, "Log: $log")
+                }
+            })
+```   
+  
 [![-----------------------------------------------------](https://raw.githubusercontent.com/andreasbm/readme/master/assets/lines/colored.png)](#templates)
 
 <p>

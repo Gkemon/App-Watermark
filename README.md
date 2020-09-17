@@ -9,7 +9,7 @@
 
 <p align="center">
   <b>Create an watermark for your Android app.</b></br>
-  <p align="center">Suppose you have a freemium app and wanna show an watermark in your app after a free trial to lessen it's user experience to buy the premium version. Then this library is compatible for your use-case. Not only this use-case, you can use it in a lot of use-cases where you wish to lessen the content access capacity of your users or preview a content all over the app content<p>
+  <p align="center">Suppose you have a freemium app and wanna show an watermark in your app after a free trial to lessen it's user experience to buy the premium version. Then this library is compatible for your use-case. Not only this use-case, you can use it in a lot of use-cases where you wish to lessen the content access capacity of your users or preview a content all over the app content (<a href="https://stackoverflow.com/questions/59132492/how-to-create-an-overlay-for-app-as-an-watermark-in-android-pragmatically"><i>A revenge of downvoting my question</i></a> :stuck_out_tongue: )<p>
 </p>
 
 <br />

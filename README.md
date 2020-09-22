@@ -81,6 +81,7 @@ AppWaterMarkBuilder.doConfigure()
                 .setWatermarkProperty(R.layout.layout_water_mark)
 		/* You can also set opacity or opacity with a default background color.
 		 * Just call like that ".setWatermarkProperty(R.layout.layout_water_mark, 40, R.color.colorAccent)" */
+		.showAlsoOutsideOfTheApp()/*Optional: Call it if anyone wanna show the watermark globally allover the other apps.*/
                 .showWatermarkAfterConfig(new WatermarkListener() { /*This callback is also optional here */
                     @Override
                     public void onSuccess() {

@@ -12,9 +12,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-                 doConfigure()
+        doConfigure()
                 .setAppCompatActivity(this@MainActivity)
                 .setWatermarkProperty(R.layout.layout_water_mark, 40, R.color.colorAccent)
+                .showAlsoOutsideOfTheApp()
                 .showWatermarkAfterConfig(object : WatermarkListener {
                     override fun onSuccess() {
                         Log.d(TAG, "Successfully showing water mark")

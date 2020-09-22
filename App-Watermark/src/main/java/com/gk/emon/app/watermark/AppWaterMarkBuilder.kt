@@ -18,6 +18,7 @@ import androidx.annotation.IntRange
 import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import com.github.florent37.inlineactivityresult.InlineActivityResult
+import java.lang.reflect.Method
 
 /**
  * Created by Gk Emon on 12/3/2019.
@@ -125,6 +126,7 @@ object AppWaterMarkBuilder {
             /** Opacity must be in between 0~100 otherwise it doesn't work*/
             @IntRange(from = 0, to = 100)
             const val DEFAULT_OPACITY = 50
+            const val OVERLAY_VIEW_TAG =121
         }
 
         override fun showAlsoOutsideOfTheApp(): AppWaterMarkBuilderStep {
@@ -162,8 +164,11 @@ object AppWaterMarkBuilder {
 
         private fun buildConfiguration() {
             try {
-                val layoutInflater = activity!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+                val layoutInflater = activity!!.getSystemService(Context.LAYOUT_INFLATER_SERVICE)
+                        as LayoutInflater
+
                 overlaidView = layoutInflater.inflate(overlayLayoutID, null)
+                overlaidView.tag= OVERLAY_VIEW_TAG
                 try {
                     /**defaultBackgroundColor not black means user set a default color as watermark
                      * background.If default color is black that means a default color is not set.
@@ -179,7 +184,7 @@ object AppWaterMarkBuilder {
                 } catch (exception: Exception) {
                     val errorLine = StackTraceElement(AppWaterMarkBuilder::class.simpleName,
                             "setWatermarkProperty",
-                            AppWaterMarkBuilder::class.simpleName + ".kt", 154).fileName
+                            AppWaterMarkBuilder::class.simpleName + ".kt", 187).fileName
                     postLog("Background color not set properly. (Line: $errorLine)", exception)
                     overlaidView.setBackgroundColor(defaultBackgroundColor)
                 }
@@ -230,19 +235,42 @@ object AppWaterMarkBuilder {
 
         override fun showWatermark() {
             try {
+                removePreviousWaterMark()
                 wm!!.addView(overlaidView, params)
                 postSuccess()
             } catch (exception: Exception) {
                 postFailure(exception)
             }
         }
-
         override fun hideWatermark() {
             try {
                 wm!!.removeView(overlaidView)
                 postSuccess()
             } catch (exception: Exception) {
                 postFailure(exception)
+            }
+        }
+
+        /** Remove previously added view or watermark if already added */
+        private fun removePreviousWaterMark() {
+            try {
+                val wmgClass = Class.forName("android.view.WindowManagerGlobal")
+                val wagInstance = wmgClass.getMethod("getInstance").invoke(null)
+                val getViewRootNames: Method = wmgClass.getMethod("getViewRootNames")
+                val getRootView: Method = wmgClass.getMethod("getRootView", String::class.java)
+                val rootViewNames = getViewRootNames.invoke(wagInstance) as Array<String>
+                for (viewName in rootViewNames) {
+                    val rootView = getRootView.invoke(wagInstance, viewName) as View
+                    if(rootView.tag == OVERLAY_VIEW_TAG){
+                        wm?.removeView(rootView)
+                    }
+                }
+            } catch (exception: java.lang.Exception) {
+                val errorLine = StackTraceElement(AppWaterMarkBuilder::class.simpleName,
+                        "removePreviousWaterMark",
+                        AppWaterMarkBuilder::class.simpleName + ".kt", 271).fileName
+                postLog("Error occurred while removing watermark which was added in any previous session" +
+                        "of the app usage. (Line: $errorLine)", exception)
             }
         }
 

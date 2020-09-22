@@ -5,6 +5,8 @@
  <p align="center">
 		<a href="https://github.com/Gkemon/App-Watermark"><img alt="Maintained" src="https://img.shields.io/badge/Maintained%3F-yes-green.svg" height="20"/></a>
 	<a href="https://github.com/Gkemon/App-Watermark"><img alt="Maintained" src="https://cdn.rawgit.com/sindresorhus/awesome/d7305f38d29fed78fa85652e3a63e154dd8e8829/media/badge.svg" height="20"/></a>
+	<a href="https://jitpack.io/#Gkemon/App-Watermark"><img alt="Maintained" src="https://jitpack.io/v/Gkemon/App-Watermark.svg" height="20"/></a>
+
 	</p>
 
 <p align="center">

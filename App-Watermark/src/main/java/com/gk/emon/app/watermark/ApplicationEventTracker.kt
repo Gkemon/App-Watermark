@@ -4,7 +4,7 @@ import android.app.Activity
 import android.app.Application.ActivityLifecycleCallbacks
 import android.os.Bundle
 
-/** This is for observing when application is going to foreground and when backgroud */
+/** This is for observing when application is going to foreground and when background */
 class ApplicationEventTracker(private val eventListener: EventListener) : ActivityLifecycleCallbacks {
     private var activityReferencesOffOn = 0 //This flag is for observing when app is started and stopped.
     private var isActivityChangingConfigurations = false

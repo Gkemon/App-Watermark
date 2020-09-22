@@ -30,9 +30,11 @@ class MainActivity : AppCompatActivity() {
                 })
 
         findViewById<View>(R.id.btn_hide_watermark).setOnClickListener {
-            startActivity(Intent(this@MainActivity, HideWatermarkActivity::class.java)) }
+            startActivity(Intent(this@MainActivity, HideWatermarkActivity::class.java))
+        }
         findViewById<View>(R.id.btn_show_watermark).setOnClickListener {
-            startActivity(Intent(this@MainActivity, ShowWatermarkActivity::class.java)) }
+            startActivity(Intent(this@MainActivity, ShowWatermarkActivity::class.java))
+        }
     }
 
     companion object {

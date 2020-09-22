@@ -126,7 +126,7 @@ object AppWaterMarkBuilder {
             /** Opacity must be in between 0~100 otherwise it doesn't work*/
             @IntRange(from = 0, to = 100)
             const val DEFAULT_OPACITY = 50
-            const val OVERLAY_VIEW_TAG =121
+            const val OVERLAY_VIEW_TAG = 121
         }
 
         override fun showAlsoOutsideOfTheApp(): AppWaterMarkBuilderStep {
@@ -168,7 +168,7 @@ object AppWaterMarkBuilder {
                         as LayoutInflater
 
                 overlaidView = layoutInflater.inflate(overlayLayoutID, null)
-                overlaidView.tag= OVERLAY_VIEW_TAG
+                overlaidView.tag = OVERLAY_VIEW_TAG
                 try {
                     /**defaultBackgroundColor not black means user set a default color as watermark
                      * background.If default color is black that means a default color is not set.
@@ -242,6 +242,7 @@ object AppWaterMarkBuilder {
                 postFailure(exception)
             }
         }
+
         override fun hideWatermark() {
             try {
                 wm!!.removeView(overlaidView)
@@ -261,7 +262,7 @@ object AppWaterMarkBuilder {
                 val rootViewNames = getViewRootNames.invoke(wagInstance) as Array<String>
                 for (viewName in rootViewNames) {
                     val rootView = getRootView.invoke(wagInstance, viewName) as View
-                    if(rootView.tag == OVERLAY_VIEW_TAG){
+                    if (rootView.tag == OVERLAY_VIEW_TAG) {
                         wm?.removeView(rootView)
                     }
                 }
@@ -273,6 +274,8 @@ object AppWaterMarkBuilder {
                         "of the app usage. (Line: $errorLine)", exception)
             }
         }
+
+
 
         override fun showWatermark(watermarkListener: WatermarkListener) {
             this.watermarkListener = watermarkListener
